@@ -37,21 +37,25 @@ def tiene_mapeo_inverso(a, b, c, d):
 
 #Desarrolle una funci´on que reciba como entradas una imagen y las constantes
 #complejas a, b, c, d y, tomando la imagen de entrada como el Plano z genere
-#la representaci´on de dicho plano en el Plano w.
-def aplicar_mapeo(img, a, b, c = 0, d = 1):
+#la representaci´on de dicho plano en el Plano w.
+
+def aplicar_mapeo(img, a, b, c, d):
 
     if(not tiene_mapeo_inverso(a, b, c, d)):
         print("La combinación de las variables a, b, c, d no tienen un mapeo inverso")
         return
 
-    if(c == 0):
-        print("C no puede valer 0")
-        return 
+    if(c == 0 and d == 1):#implica que se debe aplicar un mapeo lineal
+        return aplicar_mapeo_lineal(img, a, b)
     
-    return aplicar_mapeo_aux(img, a, b, c, d)
+    if(c == 0):
+        print("C no puede ser 0")
+        return
+    
+    return aplicar_mapeo_aux(img, a, b, c, d)#aplicar un mapeo bilineal
 
 def aplicar_mapeo_aux(planoZ, a, b, c , d):
-    lamb = a / c                        #hay que hacer el catch de cuando c = 0
+    lamb = a / c
     mu = (b*c) - (a*d)
     alpha = c**2
     beta = c*d
@@ -72,10 +76,12 @@ def aplicar_mapeo_aux(planoZ, a, b, c , d):
 
 
 #Desarrolle una funci´on que reciba como entradas una imagen y las constantes
-#complejas a, b y asuma que c = 0 ∧ d = 1 y genere el mapeo lineal
-def aplicar_mapeo(img, a, b):
+#complejas a, b y asuma que c = 0 ∧ d = 1 y genere el mapeo lineal
+
+def aplicar_mapeo_lineal(img, a, b):
     c = 0
     d = 1
+    
     return True
 
 
