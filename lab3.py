@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
+import os
 
 imgpath = "g.jpg"
 img = cv.imread(imgpath, 0)
@@ -9,7 +10,10 @@ img = cv.imread(imgpath, 0)
 definir de forma genera los casos de la funcion de mapeo w = f(z) que s´ı
 tienen mapeo inverso."""
 
-"""R/ si el determinante del mapeo b*c - a*d es igual a 0 el mapeo se degenera
+"""Para mapeo lineal: De la forma alpha*z + beta si alpha = 0 todos los valores se mapean al punto
+beta por lo que el mapeo se degenera y en estos casos no existe mapeo inverso"""
+
+"""R/ Para mapeo bilineal: Si el determinante del mapeo b*c - a*d es igual a 0 el mapeo se degenera
 y no es posible y no habría existencia de un mapeo inverso."""
 
 """Desarrolle una funci´on que reciba como entradas las constantes
@@ -38,8 +42,8 @@ def aplicar_mapeo(img, a, b, c = 0, d = 1):
     if(c == 0):
         print("C no puede ser 0")
         return np.zeros((1, 1, 1), np.uint8)[0]
-
-    return aplicar_mapeo_aux(img, a, b, c, d)#aplicar un mapeo bilineal
+    
+    return aplicar_mapeo_aux(img, a, b, c, d)#aplicar un mapeo bilineal (fractional linear transformation)
 
 def aplicar_mapeo_aux(planoZ, a, b, c , d):
     lamb = a / c
@@ -54,7 +58,7 @@ def aplicar_mapeo_aux(planoZ, a, b, c , d):
     for y in range(1, height):
         for x in range(1, width):
 
-            z = complex(x, y)
+            z = complex(x, y) #z = z + jy
             w = lamb + (mu / ((alpha * z) + beta))
             u = int(w.real)
             v = int(w.imag)
@@ -63,8 +67,6 @@ def aplicar_mapeo_aux(planoZ, a, b, c , d):
                 planoW[v][u] = planoZ[y][x]
 
     return planoW
-
-
 
 """Desarrolle una funci´on que reciba como entradas una imagen y las constantes
 complejas a, b y asuma que c = 0 ∧ d = 1 y genere el mapeo lineal"""
@@ -91,7 +93,7 @@ def aplicar_mapeo_lineal(planoZ, a, b):#c = 0 d = 1
             u = int(w.real)
             v = int(w.imag)
 
-            if(u >= 0 and u < width and v >= 0 and v < height):
+            if(u >= 0 and u < width and v >= 0 and v < height): #Limitamos los calculos a solo pares ordenados dentro del primer cuadrante
                 planoW[v][u] = planoZ[y][x]
 
     #cv.imwrite("result.jpg", planoW)
@@ -103,11 +105,12 @@ def invertir_mapeo(a, b, c, d, u, v):
     return z
 
 def plot_compare(planoZ, planoW):
+    plt.figure(figsize=(12,4))
     plt.subplot(1,2,1),plt.imshow(planoZ, cmap = 'gray')
-    plt.title('Original'), plt.xticks([]), plt.yticks([])
+    plt.title('Original'), 
+
     plt.subplot(1,2,2),plt.imshow(planoW, cmap = 'gray')
     plt.show()
-
 
 """a. El mapeo genera una magnificaci´on cuando b = 0 para todos los casos
 a != 0 ∧ a ∈ R"""
@@ -116,7 +119,7 @@ a != 0 ∧ a ∈ R"""
 #plot_compare(img, planoW)
 
 """b. El mapeo genera una magnificaci´on y una rotaci´on cuando b = 0 para
-todos los casos donde a != 0 ∧ a ∈ C ∧ a /∈ R"""
+todos los casos donde a != 0 ∧ a ∈ C ∧ a !∈ R"""
 
 #planoW = aplicar_mapeo(img, complex(1.5, 0.4), 0)
 #plot_compare(img, planoW)
@@ -136,13 +139,8 @@ Plano z en el Plano w."""
 
 
 
-#planoW = aplicar_mapeo(img, complex(1.5, 0.4), complex(0, 0), complex(0.001, -0.001), complex(1, 2))
-planoW = aplicar_mapeo(img, complex(1, 1.6), complex(0, 1000), complex(0.001, 0.0001), complex(1, 1.5))
+
+planoW = aplicar_mapeo(img, complex(1.5, 0.4), complex(0, 0), complex(0.001, -0.001), complex(1, 2))
+#planoW = aplicar_mapeo(img, complex(1, 1.6), complex(0, 1000), complex(0.001, 0.0001), complex(1, 1.5))
 plot_compare(img, planoW)
-
-
-
-
-
-
 
