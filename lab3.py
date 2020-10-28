@@ -3,8 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import os
 
-imgpath = "g.jpg"
-img = cv.imread(imgpath, 0)
+img = cv.imread("g.jpg", 0)
 
 #Parte 1 lab
 #=======================================================================================================================
@@ -40,11 +39,14 @@ def aplicar_mapeo(img, a, b, c = 0, d = 1):
         return np.zeros((1, 1, 1), np.uint8)[0]
 
     if(c == 0 and d == 1):#implica que se debe aplicar un mapeo lineal
+        if(a == 0):
+            print("a = 0 por lo tanto el mapeo se degenera y no existe mapeo inverso")
+            return np.zeros((1, 1, 1), np.uint8)[0]
         return aplicar_mapeo_lineal(img, a, b)
 
-    if(c == 0):
+    """if(c == 0):
         print("C no puede ser 0")
-        return np.zeros((1, 1, 1), np.uint8)[0]
+        return np.zeros((1, 1, 1), np.uint8)[0]"""
     
     return aplicar_mapeo_aux(img, a, b, c, d)#aplicar un mapeo bilineal (fractional linear transformation)
 
@@ -170,7 +172,7 @@ def reconstruir_mapeo(planoZ, planoW, a, b, c, d):
     for v in range(1, height):
         for u in range(1, width):
 
-            if(planoW[v][u] == 0):
+            if(planoW[v][u] <= 0):
                 z = invertir_mapeo(a, b, c, d, u, v)
                 x = int(z.real)
                 y = int(z.imag)
@@ -195,14 +197,6 @@ filtroColindancia8  = [[1, 1, 1],
                        [1, 1, 1],
                        [1, 1, 1]]
 
-def applyfilter(X, filter):
-    val = 0
-
-    for y in range(len(X)):
-        for x in range(len(X[0])):
-            val += X[y][x] * filter[y][x]
-    return val
-
 
 def reconstruir_mapeo_interpolacion(planoZ, planoW, a, b, c, d, kernel, colindancia):
     height, width = planoW.shape[0], planoW.shape[1]
@@ -210,20 +204,10 @@ def reconstruir_mapeo_interpolacion(planoZ, planoW, a, b, c, d, kernel, colindan
     for v in range(1, height):
         for u in range(1, width):
 
-            if (planoW[v][u] == 0):
+            if (planoW[v][u]  <= 10):
                 z = invertir_mapeo(a, b, c, d, u, v)
                 x = int(z.real)
                 y = int(z.imag)
-
-                """if (x > 0 and x < width - 1 and y > 0 and y < height - 1):
-                    focusedRows = planoZ[y:y + 3]
-                    subMatrix = []
-
-                    for row in focusedRows:
-                        subMatrix += [row[x - 1:x + 2]]
-
-                    pxlValue = applyfilter(subMatrix, kernel) / colindancia
-                    planoW[v][u] = abs(pxlValue)"""
 
                 if (x > 0 and x < width - 1 and y > 0 and y < height - 1):
                     plxValue = 0
