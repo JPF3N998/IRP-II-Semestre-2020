@@ -51,10 +51,6 @@ def aplicar_mapeo(img, a, b, c = 0, d = 1):
     return aplicar_mapeo_aux(img, a, b, c, d)#aplicar un mapeo bilineal (fractional linear transformation)
 
 def aplicar_mapeo_aux(planoZ, a, b, c , d):
-    lamb = a / c
-    mu = (b*c) - (a*d)
-    alpha = c**2
-    beta = c*d
 
     height, width = planoZ.shape[0], planoZ.shape[1]
 
@@ -64,7 +60,7 @@ def aplicar_mapeo_aux(planoZ, a, b, c , d):
         for x in range(1, width):
 
             z = complex(x, y) #z = z + jy
-            w = lamb + (mu / ((alpha * z) + beta))
+            w = ((a*z) + b) / ((c*z) + d)
             u = int(w.real)
             v = int(w.imag)
 
