@@ -43,10 +43,6 @@ def aplicar_mapeo(img, a, b, c = 0, d = 1):
             print("a = 0 por lo tanto el mapeo se degenera y no existe mapeo inverso")
             return np.zeros((1, 1, 1), np.uint8)[0]
         return aplicar_mapeo_lineal(img, a, b)
-
-    """if(c == 0):
-        print("C no puede ser 0")
-        return np.zeros((1, 1, 1), np.uint8)[0]"""
     
     return aplicar_mapeo_aux(img, a, b, c, d)#aplicar un mapeo bilineal (fractional linear transformation)
 
@@ -235,6 +231,4 @@ planoW = cv.imread("imagen2.jpg", 0)
 planoWgaus = cv.GaussianBlur(planoW, (5, 5), 0)
 cv.imwrite("imagen6.jpg", planoWgaus)
 
-"""nota: los puntos 4 y 5 creo que están mal planteados, porque dicen que utilice el mapeo inverso e interpolación
-para obtener los datos faltantes, pero de la imagen2 y la imagen2 es ya un mapeo al que le falta información por lo que
-creo que se refiere a la imagen original"""
+
