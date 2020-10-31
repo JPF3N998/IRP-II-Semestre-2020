@@ -108,28 +108,142 @@ def plot_compare(planoZ, planoW):
 """a. El mapeo genera una magnificaci´on cuando b = 0 para todos los casos
 a != 0 ∧ a ∈ R"""
 
-planoW = aplicar_mapeo(img, 1.5, 0)
-plot_compare(img, planoW)
+#planoW = aplicar_mapeo(img, 1.5, 0)
+#plot_compare(img, planoW)
 
 """b. El mapeo genera una magnificaci´on y una rotaci´on cuando b = 0 para
 todos los casos donde a != 0 ∧ a ∈ C ∧ a !∈ R"""
 
-planoW = aplicar_mapeo(img, complex(1.5, 0.4), 0)
-plot_compare(img, planoW)
+#planoW = aplicar_mapeo(img, complex(1.5, 0.4), 0)
+#plot_compare(img, planoW)
 
 """c. El mapeo genera ´unicamente un desplazamiento de todo el Plano z cuando
 b != 0 ∧ a = 1"""
 
-planoW = aplicar_mapeo(img, 1, complex(100, 100))
-plot_compare(img, planoW)
+#planoW = aplicar_mapeo(img, 1, complex(100, 100))
+#plot_compare(img, planoW)
 
 """d. Para el caso donde a != 0 ∧ b != 0, que el mapeo genera la combinaci´on
 de una magnificaci´on, una rotaci´on y un desplazamiento de la im´agen del
 Plano z en el Plano w."""
 
-planoW = aplicar_mapeo(img, complex(1.5, 0.4), complex(100, 100))
-plot_compare(img, planoW)
+#planoW = aplicar_mapeo(img, complex(1.5, 0.4), complex(100, 100))
+#plot_compare(img, planoW)
 
 
-planoW = aplicar_mapeo(img, complex(1.5, 0.4), complex(0, 0), complex(0.001, -0.001), complex(1, 2))
-plot_compare(img, planoW)
+#planoW = aplicar_mapeo(img, complex(1.5, 0.4), complex(0, 0), complex(0.001, -0.001), complex(1, 2))
+#planoW = aplicar_mapeo(img, complex(1, 1.6), complex(0, 1000), complex(0.001, 0.0001), complex(1, 1.5))
+#plot_compare(img, planoW)
+
+#Parte 2
+#=======================================================================================================================
+
+a = complex(3, 0.4)
+b = complex(-700, 700)
+c = complex(0.001, -0.001)
+d = complex(1, 2)
+
+"""
+a = complex(2.1, 2.1)
+b = 0
+c = 0.003
+d = complex(1, 1)
+"""
+
+"""2. Utilizando la biblioteca o herramienta seleccionada, desarrolle una aplicaci´on que reciba como entradas una
+imagen y las constantes complejas a, b, c, d y genere el mapeo directo de la imagen en el Plano w), siempre y
+cuando el mapeo exista, guarde la imagen resultante con el nombre imagen2."""
+
+planoW = aplicar_mapeo(img, a, b, c, d)
+cv.imwrite("imagen2.jpg", planoW)
+
+"""3. Utilizando el mapeo inverso obtenga los valores de los pixeles faltantes en la imgagen generada en el punto 2.,
+guarde la imagen resultante como imagen3."""
+
+def invertir_mapeo(a, b, c, d, u, v):
+    w = complex(u, v)
+    try:
+        z = ((-d*w) + b) / ((c*w) - a)
+    except:
+        return False
+
+    return z
+
+def reconstruir_mapeo(planoZ, planoW, a, b, c, d):
+
+    height, width = planoW.shape[0], planoW.shape[1]
+
+    for v in range(1, height):
+        for u in range(1, width):
+
+            if(planoW[v][u] <= 0):
+                z = invertir_mapeo(a, b, c, d, u, v)
+                if(z == False):
+                    break
+
+                x = int(z.real)
+                y = int(z.imag)
+
+                if (x >= 0 and x < width and y >= 0 and y < height):
+                    planoW[v][u] = planoZ[y][x]
+
+    return planoW
+
+planoWreconstruido = reconstruir_mapeo(img, planoW, a, b, c, d)
+cv.imwrite("imagen3.jpg", planoWreconstruido)
+
+"""4. Utilizando el mapeo inverso e interpolaci´on de pixeles en colindancia N=4, obtenga los valores de los pixeles
+faltantes en la imgagen generada en el punto 2., guarde la imagen resultante como imagen4."""
+
+filtroColindancia4  = [[0, 1, 0],
+                       [1, 1, 1],
+                       [0, 1, 0]]
+
+filtroColindancia8  = [[1, 1, 1],
+                       [1, 1, 1],
+                       [1, 1, 1]]
+
+
+def reconstruir_mapeo_interpolacion(planoZ, planoW, a, b, c, d, kernel, colindancia):
+    height, width = planoW.shape[0], planoW.shape[1]
+
+    for v in range(1, height):
+        for u in range(1, width):
+
+            if (planoW[v][u]  <= 10):
+                z = invertir_mapeo(a, b, c, d, u, v)
+                if (z == False):
+                    break
+                x = int(z.real)
+                y = int(z.imag)
+
+                if (x > 0 and x < width - 1 and y > 0 and y < height - 1):
+                    plxValue = 0
+
+                    for j in range(-1, 2):
+                        for i in range(-1, 2):
+                            plxValue += kernel[j + 1][i + 1] * planoZ[y + j][x + i]
+
+                    plxValue = plxValue / colindancia
+                    planoW[v][u] = abs(plxValue)
+
+    return planoW
+
+planoW = cv.imread("imagen2.jpg", 0)
+planoWreconstruidointerpolado4 = reconstruir_mapeo_interpolacion(img, planoW, a, b, c, d, filtroColindancia4, 5)
+cv.imwrite("imagen4.jpg", planoWreconstruidointerpolado4)
+
+"""5. Utilizando el mapeo inverso e interpolaci´on de pixeles en colindancia N=8, obtenga los valores de los pixeles
+faltantes en la imgagen generada en el punto 2., guarde la imagen resultante como imagen5."""
+
+planoW = cv.imread("imagen2.jpg", 0)
+planoWreconstruidointerpolado8 = reconstruir_mapeo_interpolacion(img, planoW, a, b, c, d, filtroColindancia8, 9)
+cv.imwrite("imagen5.jpg", planoWreconstruidointerpolado8)
+
+"""6. Utilizando un filtro Gausseano con una m´ascara de 5x5, realize el proceso de suavizado de la im´agen2, guarte
+la imagen resultante como imagen6."""
+
+planoW = cv.imread("imagen2.jpg", 0)
+planoWgaus = cv.GaussianBlur(planoW, (5, 5), 0)
+cv.imwrite("imagen6.jpg", planoWgaus)
+
