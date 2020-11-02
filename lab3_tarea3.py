@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import os
 
-img = cv.imread("g.jpg", 0)
+img = cv.imread("original.jpg", 0)
 
 #Parte 1 lab
 #=======================================================================================================================
@@ -138,17 +138,10 @@ Plano z en el Plano w."""
 #Parte 2
 #=======================================================================================================================
 
-a = complex(3, 0.4)
-b = complex(-700, 700)
-c = complex(0.001, -0.001)
-d = complex(1, 2)
-
-"""
 a = complex(2.1, 2.1)
 b = 0
 c = 0.003
 d = complex(1, 1)
-"""
 
 """2. Utilizando la biblioteca o herramienta seleccionada, desarrolle una aplicaci´on que reciba como entradas una
 imagen y las constantes complejas a, b, c, d y genere el mapeo directo de la imagen en el Plano w), siempre y
