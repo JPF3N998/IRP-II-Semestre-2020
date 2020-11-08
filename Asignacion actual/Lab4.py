@@ -1,8 +1,6 @@
 import cv2 as cv
 
-imgPaths = ["imagen.jpg", "foto3.jpg", "vacas.png"]
-
-imgpath1 = imgPaths[1]
+imgpath1 = "foto.jpg"
 imgpath2 = "imagen1.jpg"
 imgpath3 = "bordes1.jpg"
 resultante = "resultante.jpg"
@@ -29,4 +27,3 @@ cv.imwrite(imgpath3, imgLapclacianned)
 blurLaplacianImg = blurredImg - imgLapclacianned
 
 cv.imwrite(resultante, blurLaplacianImg)
-
